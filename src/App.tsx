@@ -14,6 +14,7 @@ import Categories from "./pages/Categories";
 import History from "./pages/History";
 import CreditCards from "./pages/CreditCards";
 import FixedPayments from "./pages/FixedPayments";
+import AddCardExpense from "./pages/AddCardExpense";
 import BottomNav from "./components/finance/BottomNav";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ function AppContent() {
         <Route path="/app/categorias" element={<Categories />} />
         <Route path="/app/historico" element={<History />} />
         <Route path="/app/cartoes" element={<CreditCards />} />
+        <Route path="/app/cartoes/:cardId/gasto" element={<AddCardExpense />} />
         <Route path="/app/fixos" element={<FixedPayments />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

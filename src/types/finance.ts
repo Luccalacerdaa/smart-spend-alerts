@@ -8,6 +8,9 @@ export interface Expense {
   note?: string;
   type: 'expense';
   creditCardId?: string; // Se for gasto no cartão
+  isInstallment?: boolean; // Se é parcelado
+  installments?: number; // Número de parcelas
+  currentInstallment?: number; // Parcela atual
 }
 
 export interface Income {

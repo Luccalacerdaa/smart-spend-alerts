@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useFinanceContext } from '@/contexts/FinanceContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, CreditCard } from 'lucide-react';
@@ -11,16 +11,17 @@ import { Switch } from '@/components/ui/switch';
 import { Category, CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/finance';
 import { toast } from 'sonner';
 
-export default function AddExpense() {
+export default function AddCardExpense() {
   const navigate = useNavigate();
+  const { cardId } = useParams<{ cardId: string }>();
   const { addExpense, creditCards } = useFinanceContext();
+  
+  const card = creditCards.find(c => c.id === cardId);
   
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category>('outros');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
-  const [useCard, setUseCard] = useState(false);
-  const [selectedCardId, setSelectedCardId] = useState('');
   const [isInstallment, setIsInstallment] = useState(false);
   const [installments, setInstallments] = useState('2');
 
@@ -35,13 +36,8 @@ export default function AddExpense() {
       return;
     }
 
-    if (useCard && !selectedCardId) {
-      toast.error('Selecione um cartão');
-      return;
-    }
-
-    const installmentCount = isInstallment && useCard ? parseInt(installments) : 1;
-    if (isInstallment && useCard && (isNaN(installmentCount) || installmentCount < 2 || installmentCount > 48)) {
+    const installmentCount = isInstallment ? parseInt(installments) : 1;
+    if (isInstallment && (isNaN(installmentCount) || installmentCount < 2 || installmentCount > 48)) {
       toast.error('Número de parcelas inválido (2-48)');
       return;
     }
@@ -57,27 +53,44 @@ export default function AddExpense() {
         amount: installmentValue,
         category,
         date: expenseDate.toISOString().split('T')[0],
-        note: isInstallment && useCard ? `${note ? note + ' - ' : ''}Parcela ${i + 1}/${installmentCount}` : note || undefined,
-        creditCardId: useCard ? selectedCardId : undefined,
-        isInstallment: useCard ? isInstallment : undefined,
-        installments: useCard && isInstallment ? installmentCount : undefined,
-        currentInstallment: useCard && isInstallment ? i + 1 : undefined,
+        note: isInstallment ? `${note ? note + ' - ' : ''}Parcela ${i + 1}/${installmentCount}` : note || undefined,
+        creditCardId: cardId,
+        isInstallment,
+        installments: installmentCount,
+        currentInstallment: i + 1,
       });
     }
 
-    toast.success(isInstallment && useCard ? `${installmentCount} parcelas adicionadas!` : 'Gasto adicionado!');
-    navigate('/app/dashboard');
+    toast.success(isInstallment ? `${installmentCount} parcelas adicionadas!` : 'Gasto no cartão adicionado!');
+    navigate('/app/cartoes');
   };
+
+  if (!card) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Cartão não encontrado</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-red-500 text-white p-4">
+      <div 
+        className="text-white p-4"
+        style={{ backgroundColor: card.color }}
+      >
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-bold">Adicionar Gasto</h1>
+          <div>
+            <h1 className="text-xl font-bold">Gasto no Cartão</h1>
+            <div className="flex items-center gap-2 text-white/80 text-sm">
+              <CreditCard className="w-4 h-4" />
+              {card.name}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -88,7 +101,7 @@ export default function AddExpense() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-6"
         >
-          <Label className="text-muted-foreground text-sm">Valor</Label>
+          <Label className="text-muted-foreground text-sm">Valor Total</Label>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span className="text-3xl text-muted-foreground">R$</span>
             <Input
@@ -102,87 +115,29 @@ export default function AddExpense() {
           </div>
         </motion.div>
 
-        {/* Credit Card Toggle */}
-        {creditCards.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="flex items-center justify-between p-4 bg-muted/50 rounded-2xl"
-          >
-            <div className="flex items-center gap-3">
-              <CreditCard className="w-5 h-5 text-violet-500" />
-              <div>
-                <Label className="text-sm font-medium">No Cartão?</Label>
-                <p className="text-xs text-muted-foreground">Gasto no cartão de crédito</p>
-              </div>
-            </div>
-            <Switch
-              checked={useCard}
-              onCheckedChange={(checked) => {
-                setUseCard(checked);
-                if (!checked) {
-                  setIsInstallment(false);
-                  setSelectedCardId('');
-                }
-              }}
-            />
-          </motion.div>
-        )}
-
-        {/* Card Selection */}
-        {useCard && creditCards.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-          >
-            <Label className="text-sm font-medium mb-3 block">Selecione o Cartão</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {creditCards.map((card) => (
-                <button
-                  key={card.id}
-                  type="button"
-                  onClick={() => setSelectedCardId(card.id)}
-                  className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
-                    selectedCardId === card.id 
-                      ? 'border-violet-500 bg-violet-500/10' 
-                      : 'border-border hover:border-violet-500/50'
-                  }`}
-                >
-                  <div 
-                    className="w-6 h-4 rounded"
-                    style={{ backgroundColor: card.color }}
-                  />
-                  <span className="text-sm font-medium truncate">{card.name}</span>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
         {/* Installment Toggle */}
-        {useCard && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="flex items-center justify-between p-4 bg-muted/50 rounded-2xl"
-          >
-            <div>
-              <Label className="text-sm font-medium">Parcelado?</Label>
-              <p className="text-xs text-muted-foreground">Dividir em várias parcelas</p>
-            </div>
-            <Switch
-              checked={isInstallment}
-              onCheckedChange={setIsInstallment}
-            />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="flex items-center justify-between p-4 bg-muted/50 rounded-2xl"
+        >
+          <div>
+            <Label className="text-sm font-medium">Parcelado?</Label>
+            <p className="text-xs text-muted-foreground">Dividir em várias parcelas</p>
+          </div>
+          <Switch
+            checked={isInstallment}
+            onCheckedChange={setIsInstallment}
+          />
+        </motion.div>
 
         {/* Installments Number */}
-        {useCard && isInstallment && (
+        {isInstallment && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
           >
             <Label htmlFor="installments" className="text-sm font-medium">Número de Parcelas</Label>
             <Input
@@ -206,7 +161,7 @@ export default function AddExpense() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+          transition={{ delay: 0.1 }}
         >
           <Label className="text-sm font-medium mb-3 block">Categoria</Label>
           <div className="grid grid-cols-3 gap-2">
@@ -253,7 +208,7 @@ export default function AddExpense() {
           <Label htmlFor="note" className="text-sm font-medium">Observação (opcional)</Label>
           <Textarea
             id="note"
-            placeholder="Ex: Almoço no restaurante"
+            placeholder="Ex: Compra na Amazon"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             className="mt-2 resize-none"
@@ -270,7 +225,8 @@ export default function AddExpense() {
         >
           <Button 
             type="submit" 
-            className="w-full h-14 text-lg bg-red-500 hover:bg-red-600 rounded-2xl"
+            className="w-full h-14 text-lg rounded-2xl"
+            style={{ backgroundColor: card.color }}
           >
             <Check className="w-5 h-5 mr-2" />
             Salvar Gasto

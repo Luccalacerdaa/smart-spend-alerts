@@ -4,6 +4,7 @@ import { Plus, TrendingUp, TrendingDown, Target, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import DueDateNotifications from '@/components/finance/DueDateNotifications';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <DueDateNotifications />
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}

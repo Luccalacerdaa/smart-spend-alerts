@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFinanceContext } from '@/contexts/FinanceContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, CreditCard, Trash2, X, Check } from 'lucide-react';
+import { ArrowLeft, Plus, CreditCard, Trash2, X, Check, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -135,10 +135,18 @@ export default function CreditCards() {
                     <Progress value={percentage} className="h-2 bg-white/30" />
                   </div>
 
-                  <div className="flex justify-between text-sm opacity-80">
+                  <div className="flex justify-between text-sm opacity-80 mb-3">
                     <span>Fecha dia {card.closingDay}</span>
                     <span>Vence dia {card.dueDay}</span>
                   </div>
+
+                  <button
+                    onClick={() => navigate(`/app/cartoes/${card.id}/gasto`)}
+                    className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    Adicionar Gasto
+                  </button>
                 </div>
               </motion.div>
             );
