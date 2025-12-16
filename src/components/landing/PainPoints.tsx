@@ -1,49 +1,51 @@
-import { AlertCircle, TrendingDown, HelpCircle } from "lucide-react";
+import { TrendingDown, AlertCircle, Eye } from "lucide-react";
 
 const pains = [
   {
-    icon: AlertCircle,
-    title: "Perdido com os gastos?",
-    description: "Chega o fim do mês e você não sabe para onde foi o dinheiro.",
-  },
-  {
     icon: TrendingDown,
-    title: "Sempre no vermelho?",
-    description: "As contas não fecham e sobra mês no final do salário.",
+    emoji: "😰",
+    title: "Sem Controle",
   },
   {
-    icon: HelpCircle,
-    title: "Sem visão clara?",
-    description: "Difícil entender onde você pode economizar.",
+    icon: AlertCircle,
+    emoji: "😤",
+    title: "Sempre no Vermelho",
+  },
+  {
+    icon: Eye,
+    emoji: "🤷",
+    title: "Sem Visibilidade",
   },
 ];
 
 const PainPoints = () => {
   return (
-    <section className="py-20 bg-background">
-      <div className="container">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Você se identifica com isso?
+    <section className="py-24 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-background" />
+
+      <div className="container relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold animate-fade-up">
+            Cansado disso?
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Você já se sentiu perdido(a) com seus gastos mensais? Tem dificuldade 
-            para entender para onde o dinheiro está indo? Nosso app foi criado 
-            justamente para resolver isso de um jeito descomplicado.
-          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {pains.map((pain, index) => (
             <div
               key={index}
-              className="group p-6 rounded-2xl bg-gradient-card border border-border hover:shadow-card transition-all duration-300 hover:-translate-y-1"
+              className={`
+                group text-center p-8 rounded-3xl bg-card border border-border
+                hover-lift cursor-default
+                animate-fade-up delay-${(index + 1) * 100}
+              `}
+              style={{ animationDelay: `${(index + 1) * 0.1}s` }}
             >
-              <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center mb-4 group-hover:bg-destructive/20 transition-colors">
-                <pain.icon className="w-6 h-6 text-destructive" />
+              <div className="text-6xl md:text-7xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                {pain.emoji}
               </div>
-              <h3 className="text-xl font-semibold mb-2">{pain.title}</h3>
-              <p className="text-muted-foreground">{pain.description}</p>
+              <h3 className="text-xl md:text-2xl font-bold">{pain.title}</h3>
             </div>
           ))}
         </div>
