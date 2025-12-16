@@ -1,75 +1,64 @@
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Maria Silva",
-    role: "Empreendedora",
-    content:
-      "Antes eu vivia estourando meu orçamento. Agora, com as notificações e a simplicidade do app, finalmente sei exatamente onde estou gastando.",
-    rating: 5,
+    name: "Maria S.",
+    text: "Finalmente entendo meus gastos!",
+    saved: "R$800/mês",
+    avatar: "M",
   },
   {
-    name: "Carlos Santos",
-    role: "Desenvolvedor",
-    content:
-      "O alerta no WhatsApp é genial! Recebi o aviso antes de gastar demais e consegui me controlar. Super recomendo!",
-    rating: 5,
+    name: "Carlos R.",
+    text: "Os alertas no WhatsApp são incríveis!",
+    saved: "R$1.200/mês",
+    avatar: "C",
   },
   {
-    name: "Ana Oliveira",
-    role: "Designer",
-    content:
-      "Finalmente um app de finanças que não complica. Interface linda e fácil de usar. Em 2 meses já economizei R$800!",
-    rating: 5,
+    name: "Ana L.",
+    text: "Interface linda e super fácil.",
+    saved: "R$650/mês",
+    avatar: "A",
   },
 ];
 
 const Testimonials = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-24 relative overflow-hidden">
       <div className="container">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            O que nossos <span className="text-gradient">usuários</span> dizem
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold animate-fade-up">
+            Resultados <span className="text-gradient">reais</span>
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Milhares de pessoas já transformaram suas finanças com nosso app.
-          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((t, index) => (
             <div
               key={index}
-              className="relative p-6 rounded-2xl bg-card border border-border hover:shadow-card transition-all duration-300"
+              className="group relative p-8 rounded-3xl bg-card border border-border hover-lift animate-fade-up"
+              style={{ animationDelay: `${(index + 1) * 0.1}s` }}
             >
-              <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/20" />
-              
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-primary text-primary"
-                  />
+              {/* Stars */}
+              <div className="flex gap-1 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-primary text-primary" />
                 ))}
               </div>
 
-              <p className="text-foreground mb-6 relative z-10">
-                "{testimonial.content}"
-              </p>
+              {/* Quote */}
+              <p className="text-xl md:text-2xl font-semibold mb-6">"{t.text}"</p>
 
+              {/* Saved amount */}
+              <div className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary font-bold text-lg mb-6">
+                {t.saved} economizados
+              </div>
+
+              {/* Avatar */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-primary font-semibold">
-                    {testimonial.name.charAt(0)}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg">
+                  {t.avatar}
                 </div>
-                <div>
-                  <p className="font-semibold text-sm">{testimonial.name}</p>
-                  <p className="text-muted-foreground text-sm">
-                    {testimonial.role}
-                  </p>
-                </div>
+                <span className="font-semibold">{t.name}</span>
               </div>
             </div>
           ))}
