@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
@@ -59,9 +60,11 @@ const CTA = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Button variant="hero" size="xl" className="group">
-                    Criar Conta Grátis
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <Button variant="hero" size="xl" className="group" asChild>
+                    <Link to="/app/dashboard">
+                      Criar Conta Grátis
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </Button>
                 </motion.div>
 
