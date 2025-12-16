@@ -12,6 +12,8 @@ import AddIncome from "./pages/AddIncome";
 import MonthlyGoal from "./pages/MonthlyGoal";
 import Categories from "./pages/Categories";
 import History from "./pages/History";
+import CreditCards from "./pages/CreditCards";
+import FixedPayments from "./pages/FixedPayments";
 import BottomNav from "./components/finance/BottomNav";
 import NotFound from "./pages/NotFound";
 
@@ -19,7 +21,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const showBottomNav = ['/app/dashboard', '/app/categorias', '/app/historico', '/app/meta'].includes(location.pathname);
+  const showBottomNav = ['/app/dashboard', '/app/categorias', '/app/historico', '/app/meta', '/app/cartoes', '/app/fixos'].includes(location.pathname);
 
   return (
     <>
@@ -32,6 +34,8 @@ function AppContent() {
         <Route path="/app/meta" element={<MonthlyGoal />} />
         <Route path="/app/categorias" element={<Categories />} />
         <Route path="/app/historico" element={<History />} />
+        <Route path="/app/cartoes" element={<CreditCards />} />
+        <Route path="/app/fixos" element={<FixedPayments />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {showBottomNav && <BottomNav />}

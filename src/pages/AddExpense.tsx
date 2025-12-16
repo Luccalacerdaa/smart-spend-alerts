@@ -38,7 +38,7 @@ export default function AddExpense() {
     });
 
     toast.success('Gasto adicionado!');
-    navigate('/');
+    navigate('/app/dashboard');
   };
 
   return (

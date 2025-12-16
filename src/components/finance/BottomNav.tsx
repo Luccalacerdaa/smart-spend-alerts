@@ -1,12 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, PieChart, Clock, Target } from 'lucide-react';
+import { Home, PieChart, Clock, CreditCard, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { path: '/app/dashboard', icon: Home, label: 'Início' },
   { path: '/app/categorias', icon: PieChart, label: 'Categorias' },
+  { path: '/app/cartoes', icon: CreditCard, label: 'Cartões' },
+  { path: '/app/fixos', icon: Calendar, label: 'Fixos' },
   { path: '/app/historico', icon: Clock, label: 'Histórico' },
-  { path: '/app/meta', icon: Target, label: 'Meta' },
 ];
 
 export default function BottomNav() {
@@ -26,7 +27,7 @@ export default function BottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute -top-1 w-12 h-1 bg-primary rounded-full"
+                  className="absolute -top-1 w-10 h-1 bg-primary rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
@@ -35,7 +36,7 @@ export default function BottomNav() {
                   isActive ? 'text-primary' : 'text-muted-foreground'
                 }`} 
               />
-              <span className={`text-xs mt-1 transition-colors ${
+              <span className={`text-[10px] mt-1 transition-colors ${
                 isActive ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}>
                 {item.label}

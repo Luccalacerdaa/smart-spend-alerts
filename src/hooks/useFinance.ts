@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Expense, Income, Transaction, MonthlyGoal, Category } from '@/types/finance';
+import { Expense, Income, Transaction, MonthlyGoal, Category, CreditCard, FixedPayment } from '@/types/finance';
 
 const STORAGE_KEYS = {
   transactions: 'finance_transactions',
   goals: 'finance_goals',
+  creditCards: 'finance_credit_cards',
+  fixedPayments: 'finance_fixed_payments',
 };
 
 const getCurrentMonth = () => {
@@ -14,18 +16,28 @@ const getCurrentMonth = () => {
 export function useFinance() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<MonthlyGoal[]>([]);
+  const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
+  const [fixedPayments, setFixedPayments] = useState<FixedPayment[]>([]);
   const [currentMonth] = useState(getCurrentMonth());
 
   // Load from localStorage
   useEffect(() => {
     const savedTransactions = localStorage.getItem(STORAGE_KEYS.transactions);
     const savedGoals = localStorage.getItem(STORAGE_KEYS.goals);
+    const savedCreditCards = localStorage.getItem(STORAGE_KEYS.creditCards);
+    const savedFixedPayments = localStorage.getItem(STORAGE_KEYS.fixedPayments);
     
     if (savedTransactions) {
       setTransactions(JSON.parse(savedTransactions));
     }
     if (savedGoals) {
       setGoals(JSON.parse(savedGoals));
+    }
+    if (savedCreditCards) {
+      setCreditCards(JSON.parse(savedCreditCards));
+    }
+    if (savedFixedPayments) {
+      setFixedPayments(JSON.parse(savedFixedPayments));
     }
   }, []);
 
@@ -38,6 +50,16 @@ export function useFinance() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.goals, JSON.stringify(goals));
   }, [goals]);
+
+  // Save credit cards
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.creditCards, JSON.stringify(creditCards));
+  }, [creditCards]);
+
+  // Save fixed payments
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.fixedPayments, JSON.stringify(fixedPayments));
+  }, [fixedPayments]);
 
   const addExpense = useCallback((expense: Omit<Expense, 'id' | 'type'>) => {
     const newExpense: Expense = {
@@ -122,6 +144,53 @@ export function useFinance() {
     setTransactions(prev => prev.filter(t => t.id !== id));
   }, []);
 
+  // Credit Card functions
+  const addCreditCard = useCallback((card: Omit<CreditCard, 'id'>) => {
+    const newCard: CreditCard = {
+      ...card,
+      id: crypto.randomUUID(),
+    };
+    setCreditCards(prev => [...prev, newCard]);
+  }, []);
+
+  const deleteCreditCard = useCallback((id: string) => {
+    setCreditCards(prev => prev.filter(c => c.id !== id));
+    // Also remove expenses associated with this card
+    setTransactions(prev => prev.filter(t => {
+      if (t.type === 'expense') {
+        return (t as Expense).creditCardId !== id;
+      }
+      return true;
+    }));
+  }, []);
+
+  const getCardExpenses = useCallback((cardId: string, month: string = currentMonth) => {
+    return transactions.filter(
+      t => t.type === 'expense' && (t as Expense).creditCardId === cardId && t.date.startsWith(month)
+    ) as Expense[];
+  }, [transactions, currentMonth]);
+
+  // Fixed Payments functions
+  const addFixedPayment = useCallback((payment: Omit<FixedPayment, 'id' | 'isPaid' | 'month'>) => {
+    const newPayment: FixedPayment = {
+      ...payment,
+      id: crypto.randomUUID(),
+      isPaid: false,
+      month: currentMonth,
+    };
+    setFixedPayments(prev => [...prev, newPayment]);
+  }, [currentMonth]);
+
+  const deleteFixedPayment = useCallback((id: string) => {
+    setFixedPayments(prev => prev.filter(p => p.id !== id));
+  }, []);
+
+  const toggleFixedPaymentPaid = useCallback((id: string) => {
+    setFixedPayments(prev => prev.map(p => 
+      p.id === id ? { ...p, isPaid: !p.isPaid } : p
+    ));
+  }, []);
+
   return {
     transactions,
     currentMonth,
@@ -137,5 +206,15 @@ export function useFinance() {
     getProgressPercentage,
     getRemainingBudget,
     deleteTransaction,
+    // Credit Cards
+    creditCards,
+    addCreditCard,
+    deleteCreditCard,
+    getCardExpenses,
+    // Fixed Payments
+    fixedPayments,
+    addFixedPayment,
+    deleteFixedPayment,
+    toggleFixedPaymentPaid,
   };
 }
