@@ -48,7 +48,7 @@ export default function AddIncome() {
     });
 
     toast.success('Receita adicionada!');
-    navigate('/');
+    navigate('/app/dashboard');
   };
 
   return (

@@ -7,6 +7,7 @@ export interface Expense {
   date: string;
   note?: string;
   type: 'expense';
+  creditCardId?: string; // Se for gasto no cartão
 }
 
 export interface Income {
@@ -23,6 +24,25 @@ export type Transaction = Expense | Income;
 export interface MonthlyGoal {
   amount: number;
   month: string; // YYYY-MM format
+}
+
+export interface CreditCard {
+  id: string;
+  name: string;
+  limit: number;
+  closingDay: number; // Dia do fechamento
+  dueDay: number; // Dia do vencimento
+  color: string;
+}
+
+export interface FixedPayment {
+  id: string;
+  name: string;
+  amount: number;
+  dueDay: number; // Dia do vencimento
+  category: Category;
+  isPaid: boolean;
+  month: string; // YYYY-MM
 }
 
 export const CATEGORY_LABELS: Record<Category, string> = {
@@ -48,3 +68,12 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   contas: 'hsl(142, 76%, 36%)',
   outros: 'hsl(0, 0%, 45%)',
 };
+
+export const CARD_COLORS = [
+  '#10b981', // emerald
+  '#3b82f6', // blue
+  '#8b5cf6', // violet
+  '#f59e0b', // amber
+  '#ef4444', // red
+  '#ec4899', // pink
+];
