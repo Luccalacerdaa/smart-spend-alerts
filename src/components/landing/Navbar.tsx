@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Wallet, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -65,8 +66,8 @@ const Navbar = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Button variant="default" size="lg">
-                  Começar Grátis
+                <Button variant="default" size="lg" asChild>
+                  <Link to="/app/dashboard">Começar Grátis</Link>
                 </Button>
               </motion.div>
             </div>
@@ -102,8 +103,8 @@ const Navbar = () => {
                   {item}
                 </a>
               ))}
-              <Button variant="default" className="w-full mt-4">
-                Começar Grátis
+              <Button variant="default" className="w-full mt-4" asChild>
+                <Link to="/app/dashboard">Começar Grátis</Link>
               </Button>
             </div>
           </motion.div>
