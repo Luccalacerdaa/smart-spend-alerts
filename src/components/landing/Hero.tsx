@@ -1,47 +1,105 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import heroDashboard from "@/assets/hero-dashboard.png";
 
 const Hero = () => {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  const rotateX = useTransform(scrollYProgress, [0, 0.5], [0, 15]);
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden py-10">
+    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden pt-24 pb-10">
       {/* Animated background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-accent/30 rounded-full blur-3xl animate-blob delay-300" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl animate-spin-slow" />
+        <motion.div
+          className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 90, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-accent/30 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            rotate: [90, 0, 90],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
       </div>
 
       <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text side - minimal */}
+        <motion.div style={{ y, opacity }} className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Text side */}
           <div className="text-center lg:text-left space-y-8">
-            <div className="animate-fade-up">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
               <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 text-primary text-sm font-semibold">
                 <Sparkles className="w-4 h-4" />
                 Alertas WhatsApp
               </span>
-            </div>
+            </motion.div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] animate-fade-up delay-100">
+            <motion.h1
+              className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1]"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
               Finanças
               <br />
               <span className="text-gradient">Sob Controle</span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-md mx-auto lg:mx-0 animate-fade-up delay-200">
+            <motion.p
+              className="text-xl md:text-2xl text-muted-foreground max-w-md mx-auto lg:mx-0"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
               Simples. Visual. Inteligente.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up delay-300">
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
               <Button variant="hero" size="xl" className="group">
                 Começar Grátis
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </div>
+            </motion.div>
 
-            {/* Stats - visual impact */}
-            <div className="flex gap-8 justify-center lg:justify-start animate-fade-up delay-400">
+            {/* Stats */}
+            <motion.div
+              className="flex gap-8 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
               <div className="text-center">
                 <div className="text-4xl md:text-5xl font-extrabold text-gradient">50k+</div>
                 <div className="text-sm text-muted-foreground mt-1">Usuários</div>
@@ -51,24 +109,40 @@ const Hero = () => {
                 <div className="text-4xl md:text-5xl font-extrabold text-gradient">R$2M+</div>
                 <div className="text-sm text-muted-foreground mt-1">Economizados</div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Image side - hero visual */}
-          <div className="relative animate-slide-right delay-200">
-            <div className="relative">
-              {/* Glow behind image */}
+          {/* Image side - 3D effect */}
+          <motion.div
+            className="relative perspective-1000"
+            style={{ scale, rotateX }}
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="relative" style={{ transformStyle: "preserve-3d" }}>
+              {/* Glow */}
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-3xl transform scale-90" />
-              
-              {/* Main dashboard image */}
-              <img
+
+              {/* Main dashboard */}
+              <motion.img
                 src={heroDashboard}
                 alt="Dashboard financeiro"
-                className="relative w-full rounded-2xl shadow-card animate-float"
+                className="relative w-full rounded-2xl shadow-card"
+                whileHover={{ rotateY: 5, rotateX: -5 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                style={{ transformStyle: "preserve-3d" }}
               />
 
-              {/* Floating notification badge */}
-              <div className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 bg-card rounded-2xl p-4 shadow-card animate-bounce-subtle">
+              {/* Floating cards with 3D depth */}
+              <motion.div
+                className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 bg-card rounded-2xl p-4 shadow-card"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                whileHover={{ scale: 1.05, z: 20 }}
+                style={{ transformStyle: "preserve-3d", transform: "translateZ(40px)" }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-[hsl(142_70%_45%)] flex items-center justify-center">
                     <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -80,10 +154,16 @@ const Hero = () => {
                     <div className="font-bold text-sm">Orçamento 80%</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Floating stat card */}
-              <div className="absolute -top-4 -right-4 md:-top-6 md:-right-6 bg-card rounded-2xl p-4 shadow-card animate-float-slow">
+              <motion.div
+                className="absolute -top-4 -right-4 md:-top-6 md:-right-6 bg-card rounded-2xl p-4 shadow-card"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                whileHover={{ scale: 1.05, z: 20 }}
+                style={{ transformStyle: "preserve-3d", transform: "translateZ(60px)" }}
+              >
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                     <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,10 +175,10 @@ const Hero = () => {
                     <div className="font-bold text-primary">+R$847</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
