@@ -89,7 +89,7 @@ export default function Auth() {
           <div className="flex items-center justify-center mb-4">
             <Smartphone className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Smart Spend Alerts</h1>
+          <h1 className="text-3xl font-bold text-gray-900">FlowFinance</h1>
           <p className="text-gray-600 mt-2">
             Controle suas finanças com notificações inteligentes
           </p>
@@ -222,7 +222,7 @@ export default function Auth() {
                 <CardHeader>
                   <CardTitle>Criar Conta</CardTitle>
                   <CardDescription>
-                    Cadastre-se para começar a usar o Smart Spend Alerts
+                    Cadastre-se para começar a usar o FlowFinance
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -314,7 +314,7 @@ export default function Auth() {
         <div className="mt-8 text-center">
           <Separator className="mb-4" />
           <p className="text-sm text-gray-500">
-            Ao usar o Smart Spend Alerts, você concorda com nossos termos de uso
+            Ao usar o FlowFinance, você concorda com nossos termos de uso
           </p>
         </div>
 

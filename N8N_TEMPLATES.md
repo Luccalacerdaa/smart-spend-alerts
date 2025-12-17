@@ -19,7 +19,7 @@ const template = `🏦 *${$json.title}*
 ${$json.is_test ? '🧪 *Esta é uma mensagem de teste*' : ''}
 
 ---
-Smart Spend Alerts 📊`;
+FlowFinance 📊`;
 
 return {
   to: $json.phone_number,
@@ -41,7 +41,7 @@ return {
 ⏰ Lembrete: Sua conta vence hoje, não esqueça de pagar!
 
 ---
-Smart Spend Alerts 📊
+FlowFinance 📊
 ```
 
 ## 📊 **Campos Disponíveis**
@@ -82,7 +82,7 @@ Sua ${$json.bill_name} no valor de R$ ${$json.bill_amount.toFixed(2).replace('.'
 
 ⚠️ Evite juros e multas, pague o quanto antes.
 
-Smart Spend Alerts 📊`;
+FlowFinance 📊`;
 
 return {
   to: $json.phone_number,
@@ -98,7 +98,7 @@ ${$json.message}
 
 💰 Continue controlando seus gastos!
 
-Smart Spend Alerts 📊`;
+FlowFinance 📊`;
 
 return {
   to: $json.phone_number,

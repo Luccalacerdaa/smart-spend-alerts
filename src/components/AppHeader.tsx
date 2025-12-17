@@ -43,7 +43,7 @@ export default function AppHeader() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <Smartphone className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">Smart Spend</span>
+          <span className="font-bold text-lg">FlowFinance</span>
         </div>
 
         {/* User Menu */}
