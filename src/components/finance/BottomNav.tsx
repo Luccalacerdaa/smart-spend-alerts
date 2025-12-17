@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, PieChart, Clock, CreditCard, Calendar } from 'lucide-react';
+import { Home, PieChart, Clock, CreditCard, Calendar, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
@@ -7,7 +7,7 @@ const navItems = [
   { path: '/app/categorias', icon: PieChart, label: 'Categorias' },
   { path: '/app/cartoes', icon: CreditCard, label: 'Cartões' },
   { path: '/app/fixos', icon: Calendar, label: 'Fixos' },
-  { path: '/app/historico', icon: Clock, label: 'Histórico' },
+  { path: '/app/perfil', icon: User, label: 'Perfil' },
 ];
 
 export default function BottomNav() {
