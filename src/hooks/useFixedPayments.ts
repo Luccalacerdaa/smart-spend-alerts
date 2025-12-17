@@ -27,7 +27,14 @@ export function useFixedPayments() {
 
   // Fetch fixed payments from Supabase
   const fetchFixedPayments = useCallback(async () => {
-    if (!user) return;
+    console.log('🔵 [useFixedPayments] Iniciando fetchFixedPayments');
+    
+    if (!user) {
+      console.log('⚠️ [useFixedPayments] Usuário não encontrado, pulando fetch');
+      return;
+    }
+
+    console.log('✅ [useFixedPayments] Buscando pagamentos para usuário:', user.id);
 
     try {
       setLoading(true);
@@ -37,14 +44,20 @@ export function useFixedPayments() {
         .eq('user_id', user.id)
         .order('due_day', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [useFixedPayments] Erro do Supabase no fetch:', error);
+        throw error;
+      }
 
+      console.log('📥 [useFixedPayments] Dados recebidos do Supabase:', data);
       setFixedPayments(data || []);
+      console.log('✅ [useFixedPayments] Estado atualizado com', (data || []).length, 'pagamentos');
     } catch (error: any) {
-      console.error('Erro ao carregar pagamentos fixos:', error);
-      toast.error('Erro ao carregar pagamentos fixos');
+      console.error('❌ [useFixedPayments] Erro ao carregar pagamentos fixos:', error);
+      toast.error('Erro ao carregar pagamentos fixos: ' + (error.message || 'Erro desconhecido'));
     } finally {
       setLoading(false);
+      console.log('🔵 [useFixedPayments] Fetch finalizado');
     }
   }, [user]);
 
@@ -55,34 +68,54 @@ export function useFixedPayments() {
     due_day: number;
     category: 'alimentacao' | 'transporte' | 'lazer' | 'contas' | 'outros';
   }) => {
+    console.log('🔵 [useFixedPayments] Iniciando addFixedPayment:', payment);
+    
     if (!user) {
+      console.error('❌ [useFixedPayments] Usuário não autenticado');
       toast.error('Usuário não autenticado');
       return;
     }
 
+    console.log('✅ [useFixedPayments] Usuário autenticado:', user.id);
+
     try {
+      const payloadToInsert = {
+        user_id: user.id,
+        name: payment.name,
+        amount: payment.amount,
+        due_day: payment.due_day,
+        category: payment.category,
+        is_paid: false,
+        month: getCurrentMonth(),
+      };
+
+      console.log('📤 [useFixedPayments] Enviando para Supabase:', payloadToInsert);
+
       const { data, error } = await supabase
         .from('fixed_payments')
-        .insert({
-          user_id: user.id,
-          name: payment.name,
-          amount: payment.amount,
-          due_day: payment.due_day,
-          category: payment.category,
-          is_paid: false,
-          month: getCurrentMonth(),
-        })
+        .insert(payloadToInsert)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [useFixedPayments] Erro do Supabase:', error);
+        throw error;
+      }
 
-      setFixedPayments(prev => [...prev, data]);
+      console.log('✅ [useFixedPayments] Pagamento salvo no Supabase:', data);
+
+      setFixedPayments(prev => {
+        const newList = [...prev, data];
+        console.log('🔄 [useFixedPayments] Lista atualizada:', newList);
+        return newList;
+      });
+      
       toast.success('Pagamento fixo adicionado!');
+      console.log('🎉 [useFixedPayments] Operação concluída com sucesso');
       return data;
     } catch (error: any) {
-      console.error('Erro ao adicionar pagamento fixo:', error);
-      toast.error('Erro ao adicionar pagamento fixo');
+      console.error('❌ [useFixedPayments] Erro ao adicionar pagamento fixo:', error);
+      toast.error('Erro ao adicionar pagamento fixo: ' + (error.message || 'Erro desconhecido'));
       throw error;
     }
   }, [user]);

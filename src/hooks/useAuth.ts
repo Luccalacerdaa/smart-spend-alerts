@@ -9,18 +9,28 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔵 [useAuth] Iniciando verificação de sessão');
+    
     // Verificar sessão atual
     const getSession = async () => {
       try {
+        console.log('🔄 [useAuth] Buscando sessão atual...');
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
+        
+        console.log('📥 [useAuth] Sessão recebida:', {
+          hasSession: !!session,
+          userId: session?.user?.id,
+          email: session?.user?.email
+        });
         
         setSession(session);
         setUser(session?.user ?? null);
       } catch (error) {
-        console.error('Erro ao verificar sessão:', error);
+        console.error('❌ [useAuth] Erro ao verificar sessão:', error);
       } finally {
         setLoading(false);
+        console.log('✅ [useAuth] Verificação de sessão finalizada');
       }
     };
 
@@ -29,7 +39,11 @@ export function useAuth() {
     // Escutar mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+        console.log('🔄 [useAuth] Auth state changed:', event, {
+          hasSession: !!session,
+          userId: session?.user?.id,
+          email: session?.user?.email
+        });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);

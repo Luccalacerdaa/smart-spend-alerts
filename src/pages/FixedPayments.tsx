@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 type Category = 'alimentacao' | 'transporte' | 'lazer' | 'contas' | 'outros';
 
 export default function FixedPayments() {
+  console.log('🔵 [FixedPayments] Componente renderizado');
+  
   const navigate = useNavigate();
   const { 
     fixedPayments, 
@@ -22,6 +24,12 @@ export default function FixedPayments() {
     getCurrentMonthPayments,
     getTotals
   } = useFixedPayments();
+
+  console.log('📊 [FixedPayments] Estado atual:', {
+    fixedPayments: fixedPayments.length,
+    loading,
+    payments: fixedPayments
+  });
   
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
@@ -40,42 +48,57 @@ export default function FixedPayments() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔵 [FixedPayments] Iniciando handleSubmit');
     
     if (!name.trim()) {
+      console.log('❌ [FixedPayments] Nome vazio');
       toast.error('Digite o nome da conta');
       return;
     }
     
     const value = parseFloat(amount.replace(',', '.'));
     if (isNaN(value) || value <= 0) {
+      console.log('❌ [FixedPayments] Valor inválido:', amount, value);
       toast.error('Digite um valor válido');
       return;
     }
 
     const day = parseInt(dueDay);
     if (isNaN(day) || day < 1 || day > 31) {
+      console.log('❌ [FixedPayments] Dia inválido:', dueDay, day);
       toast.error('Dia de vencimento inválido');
       return;
     }
 
+    const paymentData = {
+      name: name.trim(),
+      amount: value,
+      due_day: day,
+      category,
+    };
+
+    console.log('📤 [FixedPayments] Dados do pagamento:', paymentData);
+
     try {
       setSubmitting(true);
-      await addFixedPayment({
-        name: name.trim(),
-        amount: value,
-        due_day: day,
-        category,
-      });
+      console.log('🔄 [FixedPayments] Chamando addFixedPayment...');
+      
+      const result = await addFixedPayment(paymentData);
+      
+      console.log('✅ [FixedPayments] Pagamento adicionado:', result);
 
       setShowForm(false);
       setName('');
       setAmount('');
       setDueDay('');
       setCategory('contas');
+      
+      console.log('🎉 [FixedPayments] Formulário resetado');
     } catch (error) {
-      // Error is handled in the hook
+      console.error('❌ [FixedPayments] Erro no handleSubmit:', error);
     } finally {
       setSubmitting(false);
+      console.log('🔵 [FixedPayments] handleSubmit finalizado');
     }
   };
 
