@@ -1,32 +1,44 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFinanceContext } from '@/contexts/FinanceContext';
+import { useFixedPayments } from '@/hooks/useFixedPayments';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, Calendar, Trash2, X, Check, CheckCircle2, Circle } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Trash2, X, Check, CheckCircle2, Circle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Category, CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/finance';
+import { CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/finance';
 import { toast } from 'sonner';
+
+type Category = 'alimentacao' | 'transporte' | 'lazer' | 'contas' | 'outros';
 
 export default function FixedPayments() {
   const navigate = useNavigate();
-  const { fixedPayments, addFixedPayment, deleteFixedPayment, toggleFixedPaymentPaid, currentMonth } = useFinanceContext();
+  const { 
+    fixedPayments, 
+    loading, 
+    addFixedPayment, 
+    deleteFixedPayment, 
+    toggleFixedPaymentPaid,
+    getCurrentMonthPayments,
+    getTotals
+  } = useFixedPayments();
   
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [dueDay, setDueDay] = useState('');
   const [category, setCategory] = useState<Category>('contas');
+  const [submitting, setSubmitting] = useState(false);
 
   const categories: Category[] = ['alimentacao', 'transporte', 'lazer', 'contas', 'outros'];
 
-  const currentPayments = fixedPayments.filter(p => p.month === currentMonth);
-  const sortedPayments = [...currentPayments].sort((a, b) => a.dueDay - b.dueDay);
+  const currentPayments = getCurrentMonthPayments();
+  const sortedPayments = [...currentPayments].sort((a, b) => a.due_day - b.due_day);
   
   const today = new Date().getDate();
+  const { totalPending, totalPaid } = getTotals();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name.trim()) {
@@ -46,19 +58,25 @@ export default function FixedPayments() {
       return;
     }
 
-    addFixedPayment({
-      name: name.trim(),
-      amount: value,
-      dueDay: day,
-      category,
-    });
+    try {
+      setSubmitting(true);
+      await addFixedPayment({
+        name: name.trim(),
+        amount: value,
+        due_day: day,
+        category,
+      });
 
-    toast.success('Conta fixa adicionada!');
-    setShowForm(false);
-    setName('');
-    setAmount('');
-    setDueDay('');
-    setCategory('contas');
+      setShowForm(false);
+      setName('');
+      setAmount('');
+      setDueDay('');
+      setCategory('contas');
+    } catch (error) {
+      // Error is handled in the hook
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -77,11 +95,19 @@ export default function FixedPayments() {
     if (dueDay < today) return 'Atrasado';
     if (dueDay === today) return 'Vence hoje!';
     if (dueDay - today <= 3) return `Vence em ${dueDay - today} dias`;
-    return `Dia ${dueDay}`;
+    return `Vence dia ${dueDay}`;
   };
 
-  const totalPending = sortedPayments.filter(p => !p.isPaid).reduce((sum, p) => sum + p.amount, 0);
-  const totalPaid = sortedPayments.filter(p => p.isPaid).reduce((sum, p) => sum + p.amount, 0);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-amber-500" />
+          <p className="text-muted-foreground">Carregando pagamentos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -131,7 +157,7 @@ export default function FixedPayments() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ delay: index * 0.05 }}
               className={`bg-card rounded-2xl p-4 border transition-all ${
-                payment.isPaid ? 'opacity-60 border-emerald-200' : 'border-border'
+                payment.is_paid ? 'opacity-60 border-emerald-200' : 'border-border'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -139,7 +165,7 @@ export default function FixedPayments() {
                   onClick={() => toggleFixedPaymentPaid(payment.id)}
                   className="flex-shrink-0"
                 >
-                  {payment.isPaid ? (
+                  {payment.is_paid ? (
                     <CheckCircle2 className="w-7 h-7 text-emerald-500" />
                   ) : (
                     <Circle className="w-7 h-7 text-muted-foreground" />
@@ -149,29 +175,26 @@ export default function FixedPayments() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{CATEGORY_ICONS[payment.category]}</span>
-                    <span className={`font-medium ${payment.isPaid ? 'line-through text-muted-foreground' : ''}`}>
+                    <span className={`font-medium ${payment.is_paid ? 'line-through text-muted-foreground' : ''}`}>
                       {payment.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <Calendar className="w-3 h-3 text-muted-foreground" />
-                    <span className={`text-sm ${getStatusColor(payment.dueDay, payment.isPaid)}`}>
-                      {getStatusText(payment.dueDay, payment.isPaid)}
+                    <span className={`text-sm ${getStatusColor(payment.due_day, payment.is_paid)}`}>
+                      {getStatusText(payment.due_day, payment.is_paid)}
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <p className={`font-bold ${payment.isPaid ? 'text-muted-foreground line-through' : ''}`}>
+                  <p className={`font-bold ${payment.is_paid ? 'text-muted-foreground line-through' : ''}`}>
                     {formatCurrency(payment.amount)}
                   </p>
                 </div>
 
                 <button
-                  onClick={() => {
-                    deleteFixedPayment(payment.id);
-                    toast.success('Conta removida');
-                  }}
+                  onClick={() => deleteFixedPayment(payment.id)}
                   className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -273,10 +296,15 @@ export default function FixedPayments() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg bg-amber-500 hover:bg-amber-600 rounded-2xl"
+                  disabled={submitting}
+                  className="w-full h-14 text-lg bg-amber-500 hover:bg-amber-600 rounded-2xl disabled:opacity-50"
                 >
-                  <Check className="w-5 h-5 mr-2" />
-                  Salvar Conta
+                  {submitting ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Check className="w-5 h-5 mr-2" />
+                  )}
+                  {submitting ? 'Salvando...' : 'Salvar Conta'}
                 </Button>
               </form>
             </motion.div>
