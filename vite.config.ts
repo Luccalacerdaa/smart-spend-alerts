@@ -17,15 +17,15 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt"],
       manifest: {
-        name: "SmartSpend - Gestão Financeira",
-        short_name: "SmartSpend",
+        name: "FlowFinance - Gestão Financeira",
+        short_name: "FlowFinance",
         description: "PWA de gestão financeira pessoal simples e intuitivo",
         theme_color: "#10b981",
         background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/app/dashboard",
+        start_url: "/",
         icons: [
           {
             src: "/pwa-192x192.png",

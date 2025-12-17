@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { FinanceProvider } from "@/contexts/FinanceContext";
+import { useAuth } from "./hooks/useAuth";
 import Index from "./pages/Index";
 import FinanceHome from "./pages/FinanceHome";
 import Dashboard from "./pages/Dashboard";
@@ -26,18 +27,41 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
+  const { isAuthenticated, loading } = useAuth();
   const showBottomNav = ['/app/dashboard', '/app/categorias', '/app/historico', '/app/meta', '/app/cartoes', '/app/fixos', '/app/perfil'].includes(location.pathname);
   const showHeader = location.pathname.startsWith('/app/') && location.pathname !== '/app';
+
+  // Mostrar loading enquanto verifica autenticação
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando FlowFinance...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       {showHeader && <AppHeader />}
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? <Navigate to="/app/dashboard" replace /> : <Index />
+          } 
+        />
+        <Route 
+          path="/auth" 
+          element={
+            isAuthenticated ? <Navigate to="/app/dashboard" replace /> : <Auth />
+          } 
+        />
         <Route path="/app" element={
           <ProtectedRoute>
-            <FinanceHome />
+            <Navigate to="/app/dashboard" replace />
           </ProtectedRoute>
         } />
         <Route path="/app/dashboard" element={
