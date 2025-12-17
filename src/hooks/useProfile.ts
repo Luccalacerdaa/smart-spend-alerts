@@ -90,24 +90,20 @@ export function useProfile() {
   const updateWebhookSettings = useCallback(async (settings: Omit<WebhookSettingsInsert, 'user_id'>) => {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Usuário não autenticado');
-      }
-
-      const { data, error } = await supabase
-        .from('webhook_settings')
-        .upsert({
-          ...settings,
-          user_id: user.id,
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.rpc('upsert_webhook_settings', {
+        p_webhook_url: settings.webhook_url,
+        p_webhook_secret: settings.webhook_secret || null,
+        p_is_active: settings.is_active ?? true
+      });
 
       if (error) throw error;
 
-      setWebhookSettings(data);
+      if (!data.success) {
+        throw new Error(data.error || 'Erro desconhecido');
+      }
+
+      // Recarregar dados após atualização
+      await loadProfile();
       toast.success('Configurações de webhook atualizadas!');
       return data;
     } catch (error) {
@@ -117,28 +113,47 @@ export function useProfile() {
     } finally {
       setSaving(false);
     }
-  }, []);
+  }, [loadProfile]);
 
   // Testar notificação
   const testNotification = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Usuário não autenticado');
-      }
-
-      const { data, error } = await supabase.rpc('create_and_send_notification', {
-        p_user_id: user.id,
-        p_title: '🧪 Teste de Notificação',
-        p_message: 'Esta é uma notificação de teste do Smart Spend Alerts! Se você recebeu esta mensagem, tudo está funcionando perfeitamente! 🎉',
-        p_type: 'payment_reminder',
-        p_extra_data: { test: true, timestamp: new Date().toISOString() }
-      });
+      const { data, error } = await supabase.rpc('send_test_notification');
 
       if (error) throw error;
 
-      toast.success('Notificação de teste enviada! Verifique seu WhatsApp.');
+      if (!data.success) {
+        throw new Error(data.error || 'Erro desconhecido');
+      }
+
+      toast.success('Notificação de teste criada! Processando webhook...', {
+        description: `Dados: ${data.test_data?.user_name} - ${data.test_data?.bill_name} - R$ ${data.test_data?.amount}`
+      });
+
+      // Aguardar um pouco e processar webhooks pendentes
+      setTimeout(async () => {
+        try {
+          const response = await fetch('https://zztdqxjxjhqddtqpramt.supabase.co/functions/v1/process-notifications', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: 'send_pending_webhooks' })
+          });
+
+          const result = await response.json();
+          
+          if (result.success && result.processed_count > 0) {
+            toast.success(`${result.processed_count} webhook(s) processado(s)! Verifique seu WhatsApp.`);
+          } else {
+            toast.warning('Webhook criado, mas não foi possível processar automaticamente. Use o comando manual se necessário.');
+          }
+        } catch (webhookError) {
+          console.error('Erro ao processar webhook:', webhookError);
+          toast.warning('Notificação criada, mas erro ao processar webhook automaticamente.');
+        }
+      }, 1000);
+
       return data;
     } catch (error) {
       console.error('Erro ao enviar notificação de teste:', error);
