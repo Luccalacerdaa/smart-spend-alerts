@@ -20,13 +20,18 @@ export default defineConfig(({ mode }) => ({
         name: "FlowFinance - Gestão Financeira",
         short_name: "FlowFinance",
         description: "PWA de gestão financeira pessoal simples e intuitivo",
-        theme_color: "#10b981",
+        theme_color: "#1E40AF",
         background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
         start_url: "/",
         icons: [
+          {
+            src: "/logo-flowfinance.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+          },
           {
             src: "/pwa-192x192.png",
             sizes: "192x192",

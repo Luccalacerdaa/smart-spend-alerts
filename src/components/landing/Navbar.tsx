@@ -36,10 +36,14 @@ const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-11 h-11 rounded-xl bg-gradient-primary flex items-center justify-center shadow-soft">
-                <Wallet className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold">FinanceApp</span>
+              <img 
+                src="/logo-flowfinance.svg" 
+                alt="FlowFinance" 
+                className="w-11 h-11"
+              />
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                FlowFinance
+              </span>
             </motion.div>
 
             {/* Desktop Nav */}
