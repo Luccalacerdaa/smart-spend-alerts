@@ -96,21 +96,24 @@ const Hero = () => {
               </Button>
             </motion.div>
 
-            {/* Stats */}
+            {/* Features */}
             <motion.div
-              className="flex gap-8 justify-center lg:justify-start"
+              className="flex gap-6 justify-center lg:justify-start flex-wrap"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-extrabold text-gradient">50k+</div>
-                <div className="text-sm text-muted-foreground mt-1">Usuários</div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                100% Gratuito
               </div>
-              <div className="w-px bg-border" />
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-extrabold text-gradient">R$2M+</div>
-                <div className="text-sm text-muted-foreground mt-1">Economizados</div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                Alertas WhatsApp
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                Sem Cadastro de Cartão
               </div>
             </motion.div>
           </div>

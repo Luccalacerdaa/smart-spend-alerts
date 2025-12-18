@@ -2,9 +2,9 @@ import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 const testimonials = [
-  { name: "Maria S.", text: "Finalmente entendo meus gastos!", saved: "R$800/mês", avatar: "M" },
-  { name: "Carlos R.", text: "Os alertas no WhatsApp são incríveis!", saved: "R$1.200/mês", avatar: "C" },
-  { name: "Ana L.", text: "Interface linda e super fácil.", saved: "R$650/mês", avatar: "A" },
+  { name: "Maria S.", text: "Finalmente entendo meus gastos!", saved: "Mais organizada", avatar: "M" },
+  { name: "Carlos R.", text: "Os alertas no WhatsApp são incríveis!", saved: "Nunca esqueço contas", avatar: "C" },
+  { name: "Ana L.", text: "Interface linda e super fácil.", saved: "Controle total", avatar: "A" },
 ];
 
 const Testimonials = () => {
@@ -63,13 +63,13 @@ const Testimonials = () => {
               {/* Quote */}
               <p className="text-xl md:text-2xl font-semibold mb-6">"{t.text}"</p>
 
-              {/* Saved amount */}
+              {/* Benefit */}
               <motion.div
                 className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary font-bold text-lg mb-6"
                 whileHover={{ scale: 1.05 }}
                 style={{ transform: "translateZ(30px)" }}
               >
-                {t.saved} economizados
+                {t.saved}
               </motion.div>
 
               {/* Avatar */}
