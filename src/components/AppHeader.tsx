@@ -43,7 +43,7 @@ export default function AppHeader() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <img 
-            src="/logo-flowfinance.svg" 
+            src="/logo-512.png" 
             alt="FlowFinance" 
             className="h-8 w-8"
           />

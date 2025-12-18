@@ -37,7 +37,7 @@ const Navbar = () => {
               whileTap={{ scale: 0.95 }}
             >
               <img 
-                src="/logo-flowfinance.svg" 
+                src="/logo-512.png" 
                 alt="FlowFinance" 
                 className="w-11 h-11"
               />

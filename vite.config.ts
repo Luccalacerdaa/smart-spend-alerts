@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt"],
+      includeAssets: ["favicon.ico", "robots.txt", "logo-512.png"],
       manifest: {
         name: "FlowFinance - Gestão Financeira",
         short_name: "FlowFinance",
@@ -28,9 +28,9 @@ export default defineConfig(({ mode }) => ({
         start_url: "/",
         icons: [
           {
-            src: "/logo-flowfinance.svg",
-            sizes: "any",
-            type: "image/svg+xml",
+            src: "/logo-512.png",
+            sizes: "512x512",
+            type: "image/png",
           },
           {
             src: "/flowfinance-192.png",
